@@ -42,11 +42,31 @@ const setvalue = (id, value) => {
 }
 
 const save = (event) => {
-
+    try {
         setAddressBookObject();
-        createAndUpdateStorge();
+        if (site_properties.use_local_storage.match("true")){
+            createAndUpdateStorge();
+            resetForm();
+            window.location.replace(site_properties.home_page);  
+        } else {
+            createOrUpdateAddressBook();
+        }
+    } catch (e){
+    return;
+    }
+}
+
+const createOrUpdateAddressBook = () => {
+    let postURL = site_properties.server_url;
+    let methodCall = "POST"
+    makeServiceCall(methodCall, postURL, true, addressBookObj)
+    .then(responseText => {
         resetForm();
         window.location.replace(site_properties.home_page);
+    })
+    .catch( error => {
+        throw error;
+    });
 }
 
 const setAddressBookObject = () => {
