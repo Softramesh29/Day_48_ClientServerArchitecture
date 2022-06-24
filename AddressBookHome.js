@@ -1,14 +1,35 @@
 let addressBookList;
 window.addEventListener('DOMContentLoaded', (event) => {
+    if(site_properties.use_local_storage.match("true")){
+        getAddressBookDataFromStorage();
+    } else getAddressBookDataFromServer();
     addressBookList = getAddressBookDataFromStorage();
-    document.querySelector(".contact-count").textContent = addressBookList.length;
-    createInnerHtml();
-    localStorage.removeItem('editPer');
+    
 });
 
 const getAddressBookDataFromStorage = () => {
-    return localStorage.getItem('AddressBookList') ?        
+    addressBookList = localStorage.getItem('AddressBookList') ?        
                         JSON.parse(localStorage.getItem('AddressBookList')) : [];
+    processAddressBookDataResponse();
+}
+
+const processAddressBookDataResponse = () => {
+    document.querySelector(".contact-count").textContent = addressBookList.length;
+    createInnerHtml();
+    localStorage.removeItem('editPer');
+}
+
+const getAddressBookDataFromServer = () => {
+    makeServiceCall("GET", site_properties.server_url, true)
+    .then(responseText => {
+        addressBookList = JSON.parse(responseText);
+        processAddressBookDataResponse();
+    })
+    .catch(error => {
+        console.log("GET Error status: "+JSON.stringify(error));
+        addressBookList = [];
+        processAddressBookDataResponse();
+    });
 }
 
 const createInnerHtml = () => {

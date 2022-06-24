@@ -42,17 +42,17 @@ const setvalue = (id, value) => {
 }
 
 const save = (event) => {
-    try {
+
         setAddressBookObject();
         createAndUpdateStorge();
         resetForm();
         window.location.replace(site_properties.home_page);
-    } catch (e) {
-        return;
-    }
 }
 
 const setAddressBookObject = () => {
+    if(!isUpdate && site_properties.use_local_storage.match("true")){
+        addressBookObj.id = createNewPersonId();
+    }
     addressBookObj._text = getInputValueById('#text');
     addressBookObj._address = getInputValueById('#address');
     addressBookObj._city = getInputValueById('#city');
@@ -67,41 +67,28 @@ const createAndUpdateStorge = () => {
         let addressBookData = addressBookList.
                              find(perData => perData.id == addressBookObj.id);
         if(!addressBookData) {
-            addressBookList.push(createAddressBookData());
+            addressBookList.push(addressBookObj());
         } else {
             const index = addressBookList
                           .map(perData => perData.id)
                           .indexOf(addressBookData.id);
-            addressBookList.splice(index,1, createAddressBookData(addressBookData.id))
+            addressBookList.splice(index,1, addressBookObj);
         }
     } else {
-        addressBookList = [createAddressBookData()]
+        addressBookList = [addressBookObj]
     }
     localStorage.setItem("AddressBookList", JSON.stringify(addressBookList))
 }
 
-const createAddressBookData = (id) => {
-    let addressBookData = new AddressBookData();
-    if(!id) addressBookData.id = createNewPersonId();
-    else addressBookData.id = id ;
-    setAddressBookData(addressBookData);
-    return addressBookData;
+const resetForm = () => {
+    setvalue('#text','');
+    setvalue('#address','');
+    setvalue('#city','');
+    setvalue('#state','');
+    setvalue('#zip','');
+    setvalue('#number','');
 }
 
-const setAddressBookData = (addressBookData) => {
-    try {
-        addressBookData.text = addressBookObj._text;
-    } catch (e) {
-        setTextValue('.text-error', e);
-        throw e;
-    }
-    addressBookData.address = addressBookObj._address;
-    addressBookData.city = addressBookObj._city;
-    addressBookData.state = addressBookObj._state;
-    addressBookData.zip = addressBookObj._zip;
-    addressBookData.number = addressBookObj._number;
-    alert(addressBookData.toString());
-}
 
 const createNewPersonId = () => {
     let perID = localStorage.getItem("PersonID");
@@ -140,4 +127,5 @@ const setTextValue = (id, value) => {
     const element = document.querySelector(id);
     element.textContent = value;
 }
+
 

@@ -1,4 +1,6 @@
 let site_properties = {
-    home_page: "../HTML/AddressBookHome.html",
-    add_emp_payroll_page: "../HTML/FormValidation.html",
+    use_local_storage:"false",
+    home_page: "AddressBookHome.html",
+    add_emp_payroll_page: "AddressBookForm.html",
+    server_url: "http://127.0.0.1:3000/addressBook" 
 };
